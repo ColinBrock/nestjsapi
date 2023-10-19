@@ -1,7 +1,7 @@
 # compiled output
 /dist
 /node_modules
-
+aws-s3.config.ts
 # Logs
 logs
 *.log

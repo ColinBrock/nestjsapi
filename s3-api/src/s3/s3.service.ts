@@ -5,13 +5,15 @@ import { AwsS3Config } from 'aws-s3.config';
 @Injectable()
 export class S3Service {
   private s3: S3;
-
+  private bucketName: string;
+  
   constructor(private readonly awsS3Config: AwsS3Config) {
     this.s3 = new S3({
       accessKeyId: awsS3Config.accessKeyId,
       secretAccessKey: awsS3Config.secretAccessKey,
       region: awsS3Config.region,
     });
+    this.bucketName = awsS3Config.bucketName;
   }
 
   async uploadFile(fileKey: string, fileBuffer: Buffer): Promise<void> {

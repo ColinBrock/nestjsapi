@@ -14,6 +14,7 @@ export class S3Controller {
         const filenames = await this.s3Service.listFileNames();
         res.status(200).json({filenames});
     } catch (error){
+        console.log(error);
         res.status(500).json({error: 'Failed to list the files :('})
     }
   }

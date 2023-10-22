@@ -15,7 +15,8 @@ export class S3Controller {
         res.status(200).json({filenames});
     } catch (error){
         console.log(error);
-        res.status(500).json({error: 'Failed to list the files :('})
+        res.status(500).json({error: 'Failed to list the files :(',
+                            message: error.message,})
     }
   }
 

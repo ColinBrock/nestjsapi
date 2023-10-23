@@ -1,5 +1,5 @@
 // s3.controller.ts
-import { Controller, Get, Post, Req, Res, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, Param, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -7,16 +7,18 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('s3')
 export class S3Controller {
   constructor(private readonly s3Service: S3Service) {}
-
-  @Get('filenames')
-  async listFileNames(@Res() res: Response){
+ 
+  @Get('filenames/:bucketName')
+  async listFileNames(@Param('bucketName') bucketName: string, @Res() res: Response){
     try{
-        const filenames = await this.s3Service.listFileNames();
+        
+        const filenames = await this.s3Service.listFileNames(bucketName);
+        console.log(filenames);
         res.status(200).json({filenames});
     } catch (error){
         console.log(error);
-        res.status(500).json({error: 'Failed to list the files :(',
-                            message: error.message,})
+        res.status(500).json({error: `Failed to list the files from ${bucketName} :(`,
+                              message: error.message,})
     }
   }
 

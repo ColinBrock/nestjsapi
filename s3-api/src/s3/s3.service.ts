@@ -36,9 +36,9 @@ export class S3Service {
 
     return response.Body as Buffer;
   }
-  async listFileNames(): Promise<string[]> {
+  async listFileNames(bucketName: string): Promise<string[]> {
     const params = {
-        Bucket: this.awsS3Config.bucketName,
+        Bucket: bucketName,
     };
     try {
         const data = await this.s3.listObjectsV2(params).promise();

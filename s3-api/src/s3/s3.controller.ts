@@ -1,5 +1,5 @@
 // s3.controller.ts
-import { Controller, Get, Post, Req, Res, Param, UseInterceptors, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Req, UploadedFile, Res, Param, UseInterceptors, Delete } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,17 +22,28 @@ export class S3Controller {
     }
   }
 
-  @Get('download')
-  async downloadFile(@Req() req: Request, @Res() res: Response) {
+  @Get('download/:bucketName/:filename')
+  async downloadFile(
+    @Param('bucketName') bucketName: string,
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
     try {
-      // Implement the file download logic here using the S3Service.
-      // You can retrieve the file requested by the client from your S3 bucket using the S3Service,
-      // and then send it as a response to the client.
+      const fileStream = await this.s3Service.downloadFile(bucketName, filename);
+
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+
+      fileStream.pipe(res);
     } catch (error) {
-      // Handle any errors that occur during the download process.
-      // You can respond with an error message or appropriate status code.
+      console.log(error);
+      res.status(500).json({
+        error: `Failed to download ${filename} from ${bucketName} :(`,
+        message: error.message,
+      });
     }
   }
+
   @Delete('delete/:bucketName/:filename')
   async deleteFile(
     @Param('bucketName') bucketName: string,
@@ -49,5 +60,9 @@ export class S3Controller {
         message: error.message,
       });
     }
-}
+  }
+
+
+
+
 }

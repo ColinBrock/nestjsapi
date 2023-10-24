@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { AwsS3Config } from 'aws-s3.config';
+import { Readable } from 'stream';
 
 @Injectable()
 export class S3Service {
@@ -59,6 +60,15 @@ export class S3Service {
     };
 
     await this.s3.deleteObject(params).promise();
+}
+async downloadFile(bucketName: string, filename: string): Promise<NodeJS.ReadableStream> {
+  const params = {
+    Bucket: bucketName,
+    Key: filename,
+  };
+
+  const object = await this.s3.getObject(params).promise();
+  return object.Body as Readable;
 }
 
 }

@@ -52,6 +52,13 @@ export class S3Service {
         throw error;
     }
   }
+  async deleteFile(bucketName: string, filename: string): Promise<void> {
+    const params = {
+      Bucket: bucketName,
+      Key: filename,
+    };
+
+    await this.s3.deleteObject(params).promise();
 }
 
-
+}

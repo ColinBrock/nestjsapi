@@ -1,5 +1,5 @@
 // s3.controller.ts
-import { Controller, Get, Post, Req, Res, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, Param, UseInterceptors, Delete } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -33,5 +33,21 @@ export class S3Controller {
       // You can respond with an error message or appropriate status code.
     }
   }
+  @Delete('delete/:bucketName/:filename')
+  async deleteFile(
+    @Param('bucketName') bucketName: string,
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.s3Service.deleteFile(bucketName, filename);
+      res.status(204).send(); // 204 No Content for successful deletion
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: `Failed to delete ${filename} from ${bucketName} :(`,
+        message: error.message,
+      });
+    }
 }
-
+}

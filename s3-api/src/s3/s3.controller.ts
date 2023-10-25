@@ -1,30 +1,32 @@
 // s3.controller.ts
-import { Controller, Get, Post, Req, UploadedFile, Res, Param, UseInterceptors, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Query,
+   Req, UploadedFile, Res, Param, UseInterceptors, Delete } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('s3')
 export class S3Controller {
+  private defaultBucketName = 'callitsomethingcool';
   constructor(private readonly s3Service: S3Service) {}
  
-  @Get('filenames/:bucketName')
-  async listFileNames(@Param('bucketName') bucketName: string, @Res() res: Response){
+  @Get('filenames')
+  async listFileNames(@Res() res: Response){
     try{
         
-        const filenames = await this.s3Service.listFileNames(bucketName);
+        const filenames = await this.s3Service.listFileNames(this.defaultBucketName);
         console.log(filenames);
         res.status(200).json({filenames});
     } catch (error){
         console.log(error);
-        res.status(500).json({error: `Failed to list the files from ${bucketName} :(`,
+        res.status(500).json({error: `Failed to list the files from the bucket :(`,
                               message: error.message,})
     }
   }
 
-  @Get('download/:bucketName/:filename')
+  @Get('download/:filename')
   async downloadFile(
-    @Param('bucketName') bucketName: string,
+    @Param('callitsomethingcool') bucketName: string,
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
@@ -38,15 +40,15 @@ export class S3Controller {
     } catch (error) {
       console.log(error);
       res.status(500).json({
-        error: `Failed to download ${filename} from ${bucketName} :(`,
+        error: `Failed to download ${filename} from  :(`,
         message: error.message,
       });
     }
   }
 
-  @Delete('delete/:bucketName/:filename')
+  @Delete('delete/:filename')
   async deleteFile(
-    @Param('bucketName') bucketName: string,
+    @Param('callitsomethingcool') bucketName: string,
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
@@ -56,7 +58,7 @@ export class S3Controller {
     } catch (error) {
       console.log(error);
       res.status(500).json({
-        error: `Failed to delete ${filename} from ${bucketName} :(`,
+        error: `Failed to delete ${filename} from :(`,
         message: error.message,
       });
     }

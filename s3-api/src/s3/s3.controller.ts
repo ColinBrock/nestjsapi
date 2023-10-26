@@ -4,6 +4,7 @@ import { Controller, Get, Post, Query,
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {Multer} from 'multer';
 
 @Controller('s3')
 export class S3Controller {
@@ -26,12 +27,11 @@ export class S3Controller {
 
   @Get('download/:filename')
   async downloadFile(
-    @Param('callitsomethingcool') bucketName: string,
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
     try {
-      const fileStream = await this.s3Service.downloadFile(bucketName, filename);
+      const fileStream = await this.s3Service.downloadFile(this.defaultBucketName, filename);
 
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       res.setHeader('Content-Type', 'application/octet-stream');
@@ -48,12 +48,11 @@ export class S3Controller {
 
   @Delete('delete/:filename')
   async deleteFile(
-    @Param('callitsomethingcool') bucketName: string,
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
     try {
-      await this.s3Service.deleteFile(bucketName, filename);
+      await this.s3Service.deleteFile(this.defaultBucketName, filename);
       res.status(204).send(); // 204 No Content for successful deletion
     } catch (error) {
       console.log(error);
@@ -64,7 +63,22 @@ export class S3Controller {
     }
   }
 
-
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file')) // 'file' is the field name for the uploaded file
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    try {
+      const result = await this.s3Service.uploadFile(this.defaultBucketName, file);
+      // Handle the successful upload, you might want to return some response
+      return {
+        message: 'File uploaded successfully',
+        location: result.Location,
+      };
+    } catch (error) {
+      // Handle errors if the upload fails
+      console.error(error);
+      throw new InternalServerErrorException(`Failed to upload the file: ${error.message}`);
+    }
+  }
 
 
 }

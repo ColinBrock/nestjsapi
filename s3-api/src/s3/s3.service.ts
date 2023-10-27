@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { AwsS3Config } from 'aws-s3.config';
 import { Readable } from 'stream';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
 
 @Injectable()
 export class S3Service {
@@ -17,14 +18,14 @@ export class S3Service {
     this.bucketName = awsS3Config.bucketName;
   }
 
-  async uploadFile(fileKey: string, fileBuffer: Buffer): Promise<void> {
-    await this.s3
-      .upload({
-        Bucket: this.awsS3Config.bucketName,
-        Key: fileKey,
-        Body: fileBuffer,
-      })
-      .promise();
+  async uploadFile(fileKey: string, fileBuffer: Buffer): Promise<ManagedUpload.SendData> {
+    const result = await this.s3.upload({
+      Bucket: this.awsS3Config.bucketName,
+      Key: fileKey,
+      Body: fileBuffer,
+    }).promise();
+  
+    return result;
   }
 
   async getFile(fileKey: string): Promise<Buffer> {

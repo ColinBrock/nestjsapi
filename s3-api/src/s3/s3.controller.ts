@@ -1,10 +1,9 @@
 // s3.controller.ts
-import { Controller, Get, Post, Query,
-   Req, UploadedFile, Res, Param, UseInterceptors, Delete, InternalServerErrorException } from '@nestjs/common';
+import { UploadedFile, Controller, Get, Post, Query, Req, Res, Param, UseInterceptors, Delete, InternalServerErrorException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {Multer} from 'multer';
+import { Express } from 'express';
 
 @Controller('s3')
 export class S3Controller {
@@ -79,6 +78,4 @@ export class S3Controller {
       throw new InternalServerErrorException(`Failed to upload the file: ${error.message}`);
     }
   }
-
-
 }

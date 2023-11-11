@@ -1,5 +1,5 @@
 // s3.controller.ts
-import { UploadedFile, Controller, Get, Post, Query, Req, Res, Param, UseInterceptors, Delete, InternalServerErrorException } from '@nestjs/common';
+import { UploadedFile, Controller, Get, Post, Query, Req, Res, Param, UseInterceptors, Delete, InternalServerErrorException, Body } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -12,15 +12,16 @@ export class S3Controller {
  
   @Get('filenames')
   async listFileNames(@Res() res: Response){
-    try{
-        
-        const filenames = await this.s3Service.listFileNames(this.defaultBucketName);
-        console.log(filenames);
-        res.status(200).json({filenames});
+    try {
+      const filenames = await this.s3Service.listFileNames(this.defaultBucketName);
+      console.log(filenames);
+      res.status(200).json({filenames});
     } catch (error){
-        console.log(error);
-        res.status(500).json({error: `Failed to list the files from the bucket :(`,
-                              message: error.message,})
+      console.log(error);
+      res.status(500).json({
+        error: `Failed to list the files from the bucket :(`,
+        message: error.message,
+      });
     }
   }
 
@@ -39,7 +40,7 @@ export class S3Controller {
     } catch (error) {
       console.log(error);
       res.status(500).json({
-        error: `Failed to download ${filename} from  :(`,
+        error: `Failed to download ${filename} from :(`,
         message: error.message,
       });
     }
@@ -61,12 +62,19 @@ export class S3Controller {
       });
     }
   }
+}
 
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file')) // 'file' is the field name for the uploaded file
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+@Controller('upload')
+export class UploadController {
+  private defaultBucketName = 'callitsomethingcool';
+  constructor(private readonly s3Service: S3Service) {}
+
+  @Post()
+  async uploadFile(@Body() file: any) {
     try {
+      // Assuming the file content is directly available in the 'file' variable
       const result = await this.s3Service.uploadFile(this.defaultBucketName, file);
+      
       // Handle the successful upload, you might want to return some response
       return {
         message: 'File uploaded successfully',
@@ -79,3 +87,4 @@ export class S3Controller {
     }
   }
 }
+

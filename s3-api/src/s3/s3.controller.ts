@@ -69,7 +69,7 @@ export class UploadController {
   private defaultBucketName = 'callitsomethingcool';
   constructor(private readonly s3Service: S3Service) {}
 
-  @Post()
+  @Post('uploadFile')
   async uploadFile(@Body() file: any) {
     try {
       // Assuming the file content is directly available in the 'file' variable

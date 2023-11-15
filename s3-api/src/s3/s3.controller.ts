@@ -1,9 +1,9 @@
 // s3.controller.ts
 import { UploadedFile, Controller, Get, Post, Query, Req, Res, Param, UseInterceptors, Delete, InternalServerErrorException, Body } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Response, Express } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
+import {Multer} from 'multer';
 
 @Controller('s3')
 export class S3Controller {
@@ -62,19 +62,18 @@ export class S3Controller {
       });
     }
   }
-}
 
-@Controller('upload')
-export class UploadController {
-  private defaultBucketName = 'callitsomethingcool';
-  constructor(private readonly s3Service: S3Service) {}
+
+
 
   @Post('uploadFile')
-  async uploadFile(@Body() file: any) {
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     try {
+      const fileBuffer = file.buffer;
       // Assuming the file content is directly available in the 'file' variable
-      const result = await this.s3Service.uploadFile(this.defaultBucketName, file);
-      
+      const result = await this.s3Service.uploadFile(this.defaultBucketName, fileBuffer);
+      console.log(file);
       // Handle the successful upload, you might want to return some response
       return {
         message: 'File uploaded successfully',
@@ -89,4 +88,5 @@ export class UploadController {
 
 
 }
+
 

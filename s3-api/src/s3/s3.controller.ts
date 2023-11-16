@@ -69,6 +69,7 @@ export class S3Controller {
   @Post('uploadFile')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
     try {
       const fileBuffer = file.buffer;
       // Assuming the file content is directly available in the 'file' variable

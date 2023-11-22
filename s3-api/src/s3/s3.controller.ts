@@ -1,9 +1,9 @@
 // s3.controller.ts
-import { UploadedFile, Controller, Get, Post, Query, Req, Res, Param, UseInterceptors, Delete, InternalServerErrorException, Body } from '@nestjs/common';
-import { Request, Response, Express } from 'express';
+import { UploadedFile, Controller, Get, Post, Res, Param, UseInterceptors, Delete, InternalServerErrorException } from '@nestjs/common';
+import { Response, Express } from 'express';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {Multer} from 'multer';
+
 
 @Controller('s3')
 export class S3Controller {

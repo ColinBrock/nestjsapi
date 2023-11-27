@@ -86,8 +86,7 @@ export class S3Controller {
       throw new InternalServerErrorException(`Failed to upload the file: ${error.message}`);
     }
   }
-
-
 }
 
-
+// Keep getting error Failed to upload the file: Missing required key 'Bucket' in params." Change file structure?
+// Changing params in postman doesn't seem to work.

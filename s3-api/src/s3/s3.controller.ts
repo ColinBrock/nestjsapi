@@ -69,11 +69,11 @@ export class S3Controller {
   @Post('uploadFile')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
     try {
       const fileBuffer = file.buffer;
+      const fileKey = file.originalname;
       // Assuming the file content is directly available in the 'file' variable
-      const result = await this.s3Service.uploadFile(this.defaultBucketName, fileBuffer);
+      const result = await this.s3Service.uploadFile(fileKey, fileBuffer);
       console.log(file);
       // Handle the successful upload, you might want to return some response
       return {

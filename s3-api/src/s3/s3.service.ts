@@ -19,11 +19,13 @@ export class S3Service {
   }
 
   async uploadFile(fileKey: string, fileBuffer: Buffer): Promise<ManagedUpload.SendData> {
-    const result = await this.s3.upload({
-      Bucket: this.awsS3Config.bucketName,
+    const params = {
+      Bucket: 'callitsomethingcool',
       Key: fileKey,
       Body: fileBuffer,
-    }).promise();
+    }
+    console.log(params);
+    const result = await this.s3.upload(params).promise();
   
     // Work on this next
     return result;
